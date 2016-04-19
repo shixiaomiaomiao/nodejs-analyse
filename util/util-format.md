@@ -24,7 +24,7 @@
 
 ###源代码
 
-    const formatRegExp = /%[sdj%]/g;   //匹配 %s, %d, %j 
+    const formatRegExp = /%[sdj%]/g;   //匹配 %s, %d, %j, %%
     exports.format = function(f) {    //此处的f表示第一个参数
     if (typeof f !== 'string') {
         var objects = [];
@@ -38,29 +38,36 @@
     var i = 1;
     var args = arguments;
     var len = args.length;
-    var str = String(f).replace(formatRegExp, function(x) {
-    if (x === '%%') return '%';
-    if (i >= len) return x;
+        /****字符转换，核心内容***/
+    var str = String(f).replace(formatRegExp, function(x) {  //此处函数中x表示的是matched的内容;
+    if (x === '%%') return '%';                              //如果匹配的结果为%%,则返回%
+    if (i >= len) return x;                                  //replace中的replacer为此处的function(x)，因为replacer函数可能会执行多次，导致i自加，所以i可是2,3...，如果匹配的占位符的数量大于参数的数量，则直接将占位符返回。
     switch (x) {
-      case '%s': return String(args[i++]);
-      case '%d': return Number(args[i++]);
-      case '%j':
-        try {
-                return JSON.stringify(args[i++]);
-            } catch (_) {
-              return '[Circular]';
-            }
+        case '%s': return String(args[i++]);                   //匹配到%s,将第二个参数转化为string ,并对i自加1  
+        case '%d': return Number(args[i++]);                   //匹配到%d,将第二个参数转化为number ,并对i自加1
+        case '%j':                                             //匹配到%j,
+            try {
+                    return JSON.stringify(args[i++]);           //
+                } catch (_) {
+                    return '[Circular]';                        //？？ 循环引用 ？？
+                }
         // falls through
         default:
-            return x;
+            return x;                                           //其他情况，例如没有匹配的东西('')，则不做替换
         }
       });
-      for (var x = args[i]; i < len; x = args[++i]) {
-        if (x === null || (typeof x !== 'object' && typeof x !== 'symbol')) {
+      /****字符转换结束***/
+      for (var x = args[i]; i < len; x = args[++i]) {           //此处i的初值是没有相应占位符的剩下的第一个参数
+        if (x === null || (typeof x !== 'object' && typeof x !== 'symbol')) {  //如果没有剩下的参数，或者剩下的参数既不是object类型也不是symbol类型的话，就将参数直接用' '追加到str后面
           str += ' ' + x;
         } else {
-          str += ' ' + inspect(x);
+          str += ' ' + inspect(x);                              //否则将剩下的参数用util.inspect()方法处理以后，用' '隔开并追加到str后面
         }
       }
       return str;
     };
+注：
+- 字符串replace方法：[String.prototype.replace(regexp,function)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_string_as_a_parameter)
+- ES6中的第七种类型--symbol。[中文CSDN地址](http://www.csdn.net/article/2015-07-09/2825172-es6-in-depth-symbols)
+      [英文地址](https://hacks.mozilla.org/2015/06/es6-in-depth-symbols/)
+
