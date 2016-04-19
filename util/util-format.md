@@ -24,17 +24,17 @@
 
 ###源代码
 
-    const formatRegExp = /%[sdj%]/g;
-    exports.format = function(f) {
+    const formatRegExp = /%[sdj%]/g;   //匹配 %s, %d, %j 
+    exports.format = function(f) {    //此处的f表示第一个参数
     if (typeof f !== 'string') {
         var objects = [];
         for (var i = 0; i < arguments.length; i++) {
           objects.push(inspect(arguments[i]));
         }
-        return objects.join(' ');
+        return objects.join(' ');       //如果第一个参数不是字符串，则对每个参数进行util.inspect()处理之后，再将它们拼接起来返回
       }
-
-    if (arguments.length === 1) return f;
+        //以下的情况均是在第一个参数是字符串的前提下进行
+    if (arguments.length === 1) return f;  //如果参数的长度为1,则直接将其返回
     var i = 1;
     var args = arguments;
     var len = args.length;
