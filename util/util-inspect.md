@@ -1,5 +1,6 @@
-###翻译自:https://nodejs.org/dist/latest-v5.x/docs/api/util.html#util_util_inspect_object_options
-###源码地址：https://github.com/shixiaomiaomiao/node/blob/master/lib/util.js
+> 翻译自:https://nodejs.org/dist/latest-v5.x/docs/api/util.html#util_util_inspect_object_options
+
+> 源码地址：https://github.com/shixiaomiaomiao/node/blob/master/lib/util.js
 
 #util.inspect(object[,options])
 返回object对象的字符串形式，这对于调试时有用的。
